@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved 3-Digit Multiplication Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .controls input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        button {
+            padding: 6px 12px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .problem-container {
+            background-color: #fff;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .problem-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 5px;
+            vertical-align: middle;
+            text-align: right;
+            font-size: 1em;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .check-sub-answers {
+            display: block;
+            margin: 10px auto;
+            background-color: #28a745;
+        }
+        .check-sub-answers:hover {
+            background-color: #218838;
+        }
+        .check-all-answers {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1.1em;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .correct {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Improved 3-Digit Multiplication Practice</h1>
+
+        <div class="controls">
+            <label for="numProblems">Number of Problems: </label>
+            <input type="number" id="numProblems" min="1" value="1">
+            <button onclick="generateProblems()">Generate Problems</button>
+        </div>
+
+        <div id="problems"></div>
+
+        <button class="check-all-answers" onclick="checkAllAnswers()">Check All Answers</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        let problems = [];
+
+        function getRandomThreeDigit() {
+            return Math.floor(Math.random() * 900) + 100;
+        }
+
+        function generateProblems() {
+            const numInput = document.getElementById('numProblems');
+            const numProblems = Math.max(1, parseInt(numInput.value) || 1);
+
+            const problemsDiv = document.getElementById('problems');
+            problemsDiv.innerHTML = '';
+            problems = [];
+
+            for (let i = 0; i < numProblems; i++) {
+                const multiplicand = getRandomThreeDigit();
+                const multiplier = getRandomThreeDigit();
+                const problem = {
+                    multiplicand,
+                    multiplier,
+                    partial1: (multiplier % 10) * multiplicand,
+                    partial2: Math.floor((multiplier % 100) / 10) * multiplicand,
+                    partial3: Math.floor(multiplier / 100) * multiplicand,
+                    total: multiplicand * multiplier
+                };
+                problems.push(problem);
+                problemsDiv.appendChild(createProblemElement(problem, i+1));
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        function createProblemElement(problem, index) {
+            const container = document.createElement('div');
+            container.className = 'problem-container';
+
+            const title = document.createElement('div');
+            title.className = 'problem-title';
+            title.textContent = `Problem ${index}: ${problem.multiplicand} × ${problem.multiplier}`;
+            container.appendChild(title);
+
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr><td>${problem.multiplicand}</td></tr>
+                <tr><td>× ${problem.multiplier}</td></tr>
+                <tr><td style="border-top: 2px solid #000; padding-top: 5px;"></td></tr>
+                <tr>
+                    <td>${problem.multiplicand} × ${problem.multiplier % 10} =</td>
+                    <td><input type="number" id="p${index}_1"></td>
+                </tr>
+                <tr>
+                    <td>${problem.multiplicand} × ${Math.floor((problem.multiplier % 100)/10)}0 =</td>
+                    <td><input type="number" id="p${index}_2"></td>
+                </tr>
+                <tr>
+                    <td>${problem.multiplicand} × ${Math.floor(problem.multiplier / 100)}00 =</td>
+                    <td><input type="number" id="p${index}_3"></td>
+                </tr>
+                <tr><td style="border-top: 2px solid #000; padding-top: 5px;"></td></tr>
+                <tr>
+                    <td>Total =</td>
+                    <td><input type="number" id="p${index}_total"></td>
+                </tr>
+            `;
+            container.appendChild(table);
+
+            const checkSubAnswersBtn = document.createElement('button');
+            checkSubAnswersBtn.textContent = 'Check Sub-Answers';
+            checkSubAnswersBtn.className = 'check-sub-answers';
+            checkSubAnswersBtn.onclick = () => checkSubAnswers(problem, index);
+            container.appendChild(checkSubAnswersBtn);
+
+            return container;
+        }
+
+        function checkSubAnswers(problem, index) {
+            const inputs = [
+                document.getElementById(`p${index}_1`),
+                document.getElementById(`p${index}_2`),
+                document.getElementById(`p${index}_3`),
+                document.getElementById(`p${index}_total`)
+            ];
+            const correctAnswers = [problem.partial1, problem.partial2, problem.partial3, problem.total];
+
+            inputs.forEach((input, i) => {
+                const userAnswer = parseInt(input.value);
+                const correctAnswer = correctAnswers[i];
+
+                input.classList.toggle('correct', userAnswer === correctAnswer);
+                input.classList.toggle('incorrect', userAnswer !== correctAnswer);
+
+                let answerSpan = input.nextElementSibling;
+                if (!answerSpan || !answerSpan.classList.contains('correct-answer')) {
+                    answerSpan = document.createElement('span');
+                    answerSpan.className = 'correct-answer';
+                    input.parentNode.insertBefore(answerSpan, input.nextSibling);
+                }
+                answerSpan.textContent = ` Correct: ${correctAnswer}`;
+            });
+        }
+
+        function checkAllAnswers() {
+            let allCorrect = true;
+            problems.forEach((problem, index) => {
+                checkSubAnswers(problem, index + 1);
+                const inputs = [
+                    document.getElementById(`p${index+1}_1`),
+                    document.getElementById(`p${index+1}_2`),
+                    document.getElementById(`p${index+1}_3`),
+                    document.getElementById(`p${index+1}_total`)
+                ];
+                allCorrect = allCorrect && inputs.every(input => input.classList.contains('correct'));
+            });
+
+            const resultDiv = document.getElementById('result');
+            if (allCorrect) {
+                resultDiv.textContent = "Great job! All answers are correct.";
+                resultDiv.style.color = "#28a745";
+            } else {
+                resultDiv.textContent = "Some answers are incorrect. Please review the highlighted fields.";
+                resultDiv.style.color = "#dc3545";
+            }
+        }
+
+        window.onload = generateProblems;
+    </script>
+</body>
+</html>
