@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Improved 3-Digit Multiplication Practice</title>
+    <title>Enhanced Multiplication Practice</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
         }
         .container {
             max-width: 600px;
-            width: 100%;
+            width: 80%;
         }
         h1 {
             text-align: center;
@@ -24,16 +24,17 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .controls input[type="number"] {
-            width: 60px;
+        .controls input[type="number"], .controls select {
+            width: 120px;
             padding: 5px;
             font-size: 1em;
             border: 1px solid #ccc;
             border-radius: 4px;
             text-align: center;
+            margin: 0 10px;
         }
         button {
-            padding: 6px 12px;
+            padding: 8px 16px;
             font-size: 1em;
             background-color: #007bff;
             color: white;
@@ -41,20 +42,21 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-left: 10px;
         }
         button:hover {
             background-color: #0056b3;
         }
         .problem-container {
             background-color: #fff;
-            padding: 15px 20px;
-            margin-bottom: 20px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
         .problem-title {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            font-size: 1.3em;
+            margin-bottom: 15px;
             color: #555;
         }
         table {
@@ -62,64 +64,105 @@
             border-collapse: collapse;
         }
         td {
-            padding: 5px;
+            padding: 8px;
             vertical-align: middle;
             text-align: right;
             font-size: 1em;
         }
         input[type="number"] {
-            width: 80px;
-            padding: 5px;
+            width: 100px;
+            padding: 6px;
             font-size: 1em;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
         .check-sub-answers {
             display: block;
-            margin: 10px auto;
+            margin: 15px auto;
             background-color: #28a745;
+            padding: 8px 16px;
         }
         .check-sub-answers:hover {
             background-color: #218838;
         }
         .check-all-answers {
             display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
+            margin: 30px auto;
+            padding: 12px 24px;
             font-size: 1.1em;
+            background-color: #17a2b8;
+            color: white;
+        }
+        .check-all-answers:hover {
+            background-color: #138496;
         }
         .result {
             text-align: center;
-            margin-top: 20px;
-            font-size: 1.2em;
+            margin-top: 25px;
+            font-size: 1.3em;
+            font-weight: bold;
         }
         .correct {
-            border-color: #28a745;
-            background-color: #d4edda;
+            border-color: #28a745 !important;
+            background-color: #d4edda !important;
         }
         .incorrect {
-            border-color: #dc3545;
-            background-color: #f8d7da;
+            border-color: #dc3545 !important;
+            background-color: #f8d7da !important;
         }
         .correct-answer {
             color: #28a745;
             font-weight: bold;
             margin-left: 10px;
         }
-        @media (max-width: 600px) {
+        @media (max-width: 800px) {
             .container {
-                padding: 0 10px;
+                padding: 0 15px;
+            }
+            input[type="number"], .controls select, .controls input[type="number"] {
+                width: 100px;
+                margin: 5px 5px;
+            }
+            button {
+                margin: 10px 0 0 0;
             }
         }
+                    
+   
+input[type="number"] {
+    /* Your styles here */
+    float: left;
+  }
+
+.correct-answer {
+    text-align: left;
+    float: left;
+  }
+    
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Improved 3-Digit Multiplication Practice</h1>
+        <h1>Enhanced Multiplication Practice</h1>
 
         <div class="controls">
             <label for="numProblems">Number of Problems: </label>
             <input type="number" id="numProblems" min="1" value="1">
+
+            <label for="multiplicandSize">Multiplicand Size: </label>
+            <select id="multiplicandSize">
+                <option value="1">Single-digit</option>
+                <option value="2">Two-digit</option>
+                <option value="3" selected>Three-digit</option>
+            </select>
+
+            <label for="multiplierSize">Multiplier Size: </label>
+            <select id="multiplierSize">
+                <option value="1">Single-digit</option>
+                <option value="2">Two-digit</option>
+                <option value="3">Three-digit</option>
+            </select>
+
             <button onclick="generateProblems()">Generate Problems</button>
         </div>
 
@@ -132,13 +175,29 @@
 
     <script>
         let problems = [];
+        let currentMultiplicandSize = 3;
+        let currentMultiplierSize = 3;
 
-        function getRandomThreeDigit() {
-            return Math.floor(Math.random() * 900) + 100;
+        function getRandomNumber(size) {
+            switch(size) {
+                case 1:
+                    return Math.floor(Math.random() * 9) + 1; // 1-9
+                case 2:
+                    return Math.floor(Math.random() * 90) + 10; // 10-99
+                case 3:
+                    return Math.floor(Math.random() * 900) + 100; // 100-999
+                default:
+                    return Math.floor(Math.random() * 900) + 100;
+            }
         }
 
         function generateProblems() {
             const numInput = document.getElementById('numProblems');
+            const multiplicandSizeSelect = document.getElementById('multiplicandSize');
+            const multiplierSizeSelect = document.getElementById('multiplierSize');
+
+            currentMultiplicandSize = parseInt(multiplicandSizeSelect.value) || 3;
+            currentMultiplierSize = parseInt(multiplierSizeSelect.value) || 3;
             const numProblems = Math.max(1, parseInt(numInput.value) || 1);
 
             const problemsDiv = document.getElementById('problems');
@@ -146,15 +205,29 @@
             problems = [];
 
             for (let i = 0; i < numProblems; i++) {
-                const multiplicand = getRandomThreeDigit();
-                const multiplier = getRandomThreeDigit();
+                const multiplicand = getRandomNumber(currentMultiplicandSize);
+                const multiplier = getRandomNumber(currentMultiplierSize);
+                const multiplierDigits = currentMultiplierSize;
+                let partialAnswers = [];
+                let total = multiplicand * multiplier;
+
+                // Generate partial answers based on multiplier digits
+                for (let d = 0; d < multiplierDigits; d++) {
+                    const placeValue = Math.pow(10, d);
+                    const digit = Math.floor((multiplier / placeValue) % 10);
+                    const partial = digit * multiplicand * placeValue;
+                    partialAnswers.push({
+                        digit,
+                        placeValue,
+                        partial
+                    });
+                }
+
                 const problem = {
                     multiplicand,
                     multiplier,
-                    partial1: (multiplier % 10) * multiplicand,
-                    partial2: Math.floor((multiplier % 100) / 10) * multiplicand,
-                    partial3: Math.floor(multiplier / 100) * multiplicand,
-                    total: multiplicand * multiplier
+                    partialAnswers,
+                    total
                 };
                 problems.push(problem);
                 problemsDiv.appendChild(createProblemElement(problem, i+1));
@@ -173,28 +246,41 @@
             container.appendChild(title);
 
             const table = document.createElement('table');
-            table.innerHTML = `
-                <tr><td>${problem.multiplicand}</td></tr>
-                <tr><td>× ${problem.multiplier}</td></tr>
-                <tr><td style="border-top: 2px solid #000; padding-top: 5px;"></td></tr>
+            let tableHTML = `
                 <tr>
-                    <td>${problem.multiplicand} × ${problem.multiplier % 10} =</td>
-                    <td><input type="number" id="p${index}_1"></td>
+                    <td>${problem.multiplicand}</td>
                 </tr>
                 <tr>
-                    <td>${problem.multiplicand} × ${Math.floor((problem.multiplier % 100)/10)}0 =</td>
-                    <td><input type="number" id="p${index}_2"></td>
+                    <td>× ${problem.multiplier}</td>
                 </tr>
                 <tr>
-                    <td>${problem.multiplicand} × ${Math.floor(problem.multiplier / 100)}00 =</td>
-                    <td><input type="number" id="p${index}_3"></td>
-                </tr>
-                <tr><td style="border-top: 2px solid #000; padding-top: 5px;"></td></tr>
-                <tr>
-                    <td>Total =</td>
-                    <td><input type="number" id="p${index}_total"></td>
+                    <td style="border-top: 2px solid #000; padding-top: 8px;"></td>
                 </tr>
             `;
+
+            // Add partial answers
+            problem.partialAnswers.forEach((partial, idx) => {
+                // Only display non-zero partials
+                if (partial.partial !== 0) {
+                    tableHTML += `
+                        <tr>
+                            <td>${problem.multiplicand} × ${partial.digit}${partial.placeValue > 1 ? '0'.repeat(Math.log10(partial.placeValue)) : ''} =</td>
+                            <td><input type="number" id="p${index}_partial${idx + 1}" placeholder="Answer"></td>
+                        </tr>
+                    `;
+                }
+            });
+
+            tableHTML += `
+                <tr>
+                    <td style="border-top: 2px solid #000; padding-top: 8px;"></td>
+                </tr>
+                <tr>
+                    <td>Total =</td>
+                    <td><input type="number" id="p${index}_total" placeholder="Answer"></td>
+                </tr>
+            `;
+            table.innerHTML = tableHTML;
             container.appendChild(table);
 
             const checkSubAnswersBtn = document.createElement('button');
@@ -207,21 +293,32 @@
         }
 
         function checkSubAnswers(problem, index) {
-            const inputs = [
-                document.getElementById(`p${index}_1`),
-                document.getElementById(`p${index}_2`),
-                document.getElementById(`p${index}_3`),
-                document.getElementById(`p${index}_total`)
-            ];
-            const correctAnswers = [problem.partial1, problem.partial2, problem.partial3, problem.total];
+            const partials = problem.partialAnswers.filter(p => p.partial !== 0);
+            let allPartialCorrect = true;
 
-            inputs.forEach((input, i) => {
+            var all_sub_answers_given = true;
+
+            partials.forEach((partial, idx) => {
+                const input = document.getElementById(`p${index}_partial${idx + 1}`);
                 const userAnswer = parseInt(input.value);
-                const correctAnswer = correctAnswers[i];
+                const correctAnswer = partial.partial;
+                
+                // if the user has a blank aswer or no value, then don't do anything. 
+                if (isNaN(userAnswer)) {
+                    all_sub_answers_given = false;
+                    return ;
+                }
 
-                input.classList.toggle('correct', userAnswer === correctAnswer);
-                input.classList.toggle('incorrect', userAnswer !== correctAnswer);
+                if (userAnswer === correctAnswer) {
+                    input.classList.add('correct');
+                    input.classList.remove('incorrect');
+                } else {
+                    input.classList.add('incorrect');
+                    input.classList.remove('correct');
+                    allPartialCorrect = false;
+                }
 
+                // Display correct answer
                 let answerSpan = input.nextElementSibling;
                 if (!answerSpan || !answerSpan.classList.contains('correct-answer')) {
                     answerSpan = document.createElement('span');
@@ -230,28 +327,132 @@
                 }
                 answerSpan.textContent = ` Correct: ${correctAnswer}`;
             });
+
+            if (!all_sub_answers_given) {
+                return;
+            }
+
+            // Optionally, provide feedback for the total
+            const totalInput = document.getElementById(`p${index}_total`);
+            const userTotal = parseInt(totalInput.value);
+            const correctTotal = problem.total;
+
+            if (userTotal === correctTotal) {
+                totalInput.classList.add('correct');
+                totalInput.classList.remove('incorrect');
+            } else {
+                totalInput.classList.add('incorrect');
+                totalInput.classList.remove('correct');
+            }
+
+            let totalSpan = totalInput.nextElementSibling;
+            if (!totalSpan || !totalSpan.classList.contains('correct-answer')) {
+                totalSpan = document.createElement('span');
+                totalSpan.className = 'correct-answer';
+                totalInput.parentNode.insertBefore(totalSpan, totalInput.nextSibling);
+            }
+            totalSpan.textContent = ` Correct: ${correctTotal}`;
+
+            // Optionally, update overall result
+            updateOverallResult();
         }
 
         function checkAllAnswers() {
             let allCorrect = true;
+
             problems.forEach((problem, index) => {
-                checkSubAnswers(problem, index + 1);
-                const inputs = [
-                    document.getElementById(`p${index+1}_1`),
-                    document.getElementById(`p${index+1}_2`),
-                    document.getElementById(`p${index+1}_3`),
-                    document.getElementById(`p${index+1}_total`)
-                ];
-                allCorrect = allCorrect && inputs.every(input => input.classList.contains('correct'));
+                const currentIndex = index + 1;
+                const partials = problem.partialAnswers.filter(p => p.partial !== 0);
+
+                partials.forEach((partial, idx) => {
+                    const input = document.getElementById(`p${currentIndex}_partial${idx + 1}`);
+                    const userAnswer = parseInt(input.value);
+                    const correctAnswer = partial.partial;
+
+                    if (userAnswer === correctAnswer) {
+                        input.classList.add('correct');
+                        input.classList.remove('incorrect');
+                    } else {
+                        input.classList.add('incorrect');
+                        input.classList.remove('correct');
+                        allCorrect = false;
+                    }
+
+                    // Display correct answer
+                    let answerSpan = input.nextElementSibling;
+                    if (!answerSpan || !answerSpan.classList.contains('correct-answer')) {
+                        answerSpan = document.createElement('span');
+                        answerSpan.className = 'correct-answer';
+                        input.parentNode.insertBefore(answerSpan, input.nextSibling);
+                    }
+                    answerSpan.textContent = ` Correct: ${correctAnswer}`;
+                });
+
+                // Check total
+                const totalInput = document.getElementById(`p${currentIndex}_total`);
+                const userTotal = parseInt(totalInput.value);
+                const correctTotal = problem.total;
+
+                if (userTotal === correctTotal) {
+                    totalInput.classList.add('correct');
+                    totalInput.classList.remove('incorrect');
+                } else {
+                    totalInput.classList.add('incorrect');
+                    totalInput.classList.remove('correct');
+                    allCorrect = false;
+                }
+
+                let totalSpan = totalInput.nextElementSibling;
+                if (!totalSpan || !totalSpan.classList.contains('correct-answer')) {
+                    totalSpan = document.createElement('span');
+                    totalSpan.className = 'correct-answer';
+                    totalInput.parentNode.insertBefore(totalSpan, totalInput.nextSibling);
+                }
+                totalSpan.textContent = ` Correct: ${correctTotal}`;
             });
 
+            // Update overall result message
             const resultDiv = document.getElementById('result');
             if (allCorrect) {
-                resultDiv.textContent = "Great job! All answers are correct.";
+                resultDiv.textContent = "Excellent! All answers are correct.";
                 resultDiv.style.color = "#28a745";
             } else {
                 resultDiv.textContent = "Some answers are incorrect. Please review the highlighted fields.";
                 resultDiv.style.color = "#dc3545";
+            }
+        }
+
+        function updateOverallResult() {
+            const resultDiv = document.getElementById('result');
+            let allCorrect = true;
+
+            problems.forEach((problem, index) => {
+                const currentIndex = index + 1;
+                const partials = problem.partialAnswers.filter(p => p.partial !== 0);
+
+                partials.forEach((partial, idx) => {
+                    const input = document.getElementById(`p${currentIndex}_partial${idx + 1}`);
+                    if (!input.classList.contains('correct')) {
+                        allCorrect = false;
+                    }
+                });
+
+                const totalInput = document.getElementById(`p${currentIndex}_total`);
+                if (!totalInput.classList.contains('correct')) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                resultDiv.textContent = "Excellent! All answers are correct.";
+                resultDiv.style.color = "#28a745";
+            } else {
+                // Only display message if not all correct
+                // This avoids overwriting the message if it's already indicating some errors
+                if (resultDiv.textContent !== "Some answers are incorrect. Please review the highlighted fields.") {
+                    resultDiv.textContent = "Some answers are incorrect. Please review the highlighted fields.";
+                    resultDiv.style.color = "#dc3545";
+                }
             }
         }
 
